@@ -120,6 +120,10 @@ nav ul li a {
     color: transparent;
     text-shadow: none;
     padding-bottom: 28px;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
+    isolation: isolate;
 }
 
 .title p{
