@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Документация | Quark Engine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="background-cubes">
+    <div class="cube" style="left:10%;animation-delay:0s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:30%;animation-delay:5s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:60%;animation-delay:10s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:80%;animation-delay:15s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:5%;animation-delay:2s;--sz:30px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:20%;animation-delay:7s;--sz:50px;opacity:0.1"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:45%;animation-delay:3s;--sz:35px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:55%;animation-delay:12s;--sz:25px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:70%;animation-delay:8s;--sz:45px;opacity:0.15"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:90%;animation-delay:18s;--sz:30px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:15%;animation-delay:14s;--sz:40px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:85%;animation-delay:4s;--sz:20px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<nav>
+    <div class="logo-wrap">
+        <div class="logo">QUARK</div>
+    </div>
+    <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="docs.html">Документация</a></li>
+        <li><a href="https://github.com/Quark-Engine/QuarkEngine/actions" target="_blank">Скачать</a></li>
+        <li><a href="https://github.com/Quark-Engine/QuarkEngine" target="_blank">GitHub</a></li>
+    </ul>
+</nav>
+
+<main class="docs">
+    <h2>Документация API плагинов</h2>
+    
+    <p>Плагины в Quark Engine представляют собой динамические библиотеки (DLL или .so), которые позволяют расширять функционал движка, создавать новые инструменты и модифицировать поведение сцены в реальном времени.</p>
+
+    <h3>Быстрый старт</h3>
+    <p>Каждый плагин должен экспортировать функцию <code>get_plugin()</code>. Это единственная точка входа, которую ищет движок.</p>
+    <pre><code><span class="sh-keyword">#include</span> <span class="sh-string">"Plugin.h"</span>
+
+<span class="sh-keyword">void</span> on_update(PluginContext* ctx) {
+    <span class="sh-comment">// Логика каждый кадр</span>
+}
+
+<span class="sh-keyword">PLUGIN_EXPORT</span> Plugin* get_plugin() {
+    <span class="sh-keyword">static</span> Plugin my_plugin = {
+        <span class="sh-string">"Example Plugin"</span>,
+        <span class="sh-string">"1.0.0"</span>,
+        <span class="sh-keyword">nullptr</span>, <span class="sh-comment">// on_load</span>
+        <span class="sh-keyword">nullptr</span>, <span class="sh-comment">// on_unload</span>
+        on_update,
+        <span class="sh-keyword">nullptr</span>  <span class="sh-comment">// on_draw_ui</span>
+    };
+    <span class="sh-keyword">return</span> &my_plugin;
+}</code></pre>
+
+    <h3>Жизненный цикл</h3>
+    <div class="api-grid">
+        <div class="api-card">
+            <h4>on_load</h4>
+            <p>Вызывается один раз при загрузке библиотеки. Используйте для инициализации ресурсов.</p>
+        </div>
+        <div class="api-card">
+            <h4>on_update</h4>
+            <p>Вызывается каждый кадр перед рендерингом. Доступен <code>delta_time</code> для вычислений.</p>
+        </div>
+        <div class="api-card">
+            <h4>on_draw_ui</h4>
+            <p>Специальный проход для отрисовки интерфейса плагина через встроенные функции UI.</p>
+        </div>
+        <div class="api-card">
+            <h4>on_unload</h4>
+            <p>Вызывается перед выгрузкой плагина. Обязательно освободите всю выделенную память.</p>
+        </div>
+    </div>
+
+    <h3>Функциональные возможности</h3>
+    
+    <div class="api-grid">
+        <div class="api-card">
+            <h4>Интерфейс (UI)</h4>
+            <p>Движок предоставляет Immediate-mode UI систему:</p>
+            <ul>
+                <li><code>ui_begin / ui_end</code> — создание окон.</li>
+                <li><code>ui_button</code> — обработка нажатий.</li>
+                <li><code>ui_slider_float</code> — управление параметрами.</li>
+                <li><code>ui_color_edit3</code> — выбор цветов.</li>
+            </ul>
+        </div>
+
+        <div class="api-card">
+            <h4>Работа с сущностями</h4>
+            <p>Полный контроль над объектами в сцене:</p>
+            <ul>
+                <li>Чтение: <code>entity_get_position</code>, <code>get_name</code>.</li>
+                <li>Мутация: <code>entity_set_scale</code>, <code>set_rotation</code>.</li>
+                <li>Управление: <code>scene_spawn</code>, <code>scene_delete</code>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="docs-note">
+        <strong>Внимание:</strong> Не сохраняйте указатель <code>PluginContext</code> между вызовами функций. Движок может пересоздавать контекст в каждом кадре для обновления данных о выделенных объектах и статистике.
+    </div>
+</main>
+
+</body>
+</html>

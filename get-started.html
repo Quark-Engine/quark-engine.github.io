@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Начало работы | Quark Engine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="background-cubes">
+    <div class="cube" style="left:10%;animation-delay:0s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:30%;animation-delay:5s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:60%;animation-delay:10s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:80%;animation-delay:15s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:45%;animation-delay:3s;--sz:35px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:90%;animation-delay:18s;--sz:30px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<nav>
+    <div class="logo-wrap">
+        <div class="logo">QUARK</div>
+    </div>
+    <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="docs.html">Документация</a></li>
+        <li><a href="https://github.com/valmme/QuarkEngine/actions" target="_blank">Скачать</a></li>
+        <li><a href="https://github.com/valmme/QuarkEngine" target="_blank">GitHub</a></li>
+    </ul>
+</nav>
+
+<main class="docs">
+    <h2>Начало работы</h2>
+    
+    <p>Добро пожаловать в Quark Engine. Следуйте этой инструкции, чтобы запустить свой первый проект за считанные минуты.</p>
+
+    <h3>1. Загрузка движка</h3>
+    <p>Перейдите в раздел GitHub Actions или релизы и скачайте последнюю сборку для вашей ОС (Windows или Linux).</p>
+    <a href="https://github.com/valmme/QuarkEngine" class="btn" style="margin-bottom: 24px;">Скачать последнюю версию</a>
+
+    <h3>2. Системные требования</h3>
+    <div class="api-grid">
+        <div class="api-card">
+            <h4>Видеокарта</h4>
+            <p>Поддержка OpenGL 3.3 или выше (NVIDIA GTX 550 / AMD RX 560+).</p>
+        </div>
+        <div class="api-card">
+            <h4>Компилятор</h4>
+            <p>Для разработки плагинов потребуется MSVC (Visual Studio 2022) или GCC 11+.</p>
+        </div>
+    </div>
+
+    <h3>3. Создание проекта</h3>
+    <p>После запуска <code>QuarkEditor.exe</code> выберите «New Project». Движок создаст базовую структуру папок:</p>
+    <pre><code>/MyProject
+  /resources      <span class="sh-comment">   // Текстуры, модели, звуки</span>
+  scene.json <span class="sh-comment">        // Сохранённая сцена</span>
+  project.quarkproj  <span class="sh-comment">// Файл конфигурации</span></code></pre>
+
+    <div class="docs-note">
+        <strong>Совет:</strong> Если вы планируете писать плагины на C++, обязательно загляните в раздел <a href="docs.html" style="color: inherit; text-decoration: underline;">API Документации</a>, чтобы узнать, как взаимодействовать с объектами сцены.
+    </div>
+
+    <div class="buttons" style="margin-top: 48px;">
+        <a href="docs.html" class="btn">Перейти к API</a>
+        <a href="index.html" class="btn" style="background: none;">Вернуться на главную</a>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,10 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Quark Engine Page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quark Engine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-    <h1>Welcome to Quark Engine</h1>
+
+<div class="background-cubes">
+    <div class="cube" style="left:10%;animation-delay:0s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:30%;animation-delay:5s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:60%;animation-delay:10s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:80%;animation-delay:15s"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:5%;animation-delay:2s;--sz:30px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:20%;animation-delay:7s;--sz:50px;opacity:0.1"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:45%;animation-delay:3s;--sz:35px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:55%;animation-delay:12s;--sz:25px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:70%;animation-delay:8s;--sz:45px;opacity:0.15"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:90%;animation-delay:18s;--sz:30px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:15%;animation-delay:14s;--sz:40px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="cube" style="left:85%;animation-delay:4s;--sz:20px"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<nav>
+    <div class="logo-wrap">
+        <div class="logo">QUARK</div>
+    </div>
+
+    <ul>
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="docs.html">Документация</a></li>
+        <li><a href="https://github.com/Quark-Engine/QuarkEngine/actions" target="_blank">Скачать</a></li>
+        <li><a href="https://github.com/Quark-Engine/QuarkEngine" target="_blank">GitHub</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <div class="title">
+        <h1>Quark Engine</h1>
+        <p>Современный 3D движок с редактором сцен, системой компонентов и полной свободой кастомизации.</p>
+
+        <div class="buttons">
+            <a href="get-started.html" class="btn">Начать</a>
+            <a href="docs.html" class="btn">Документация</a>
+        </div>
+    </div>
+
+    <div class="engine-preview">
+        <img src="engine_screen.png" alt="Engine Screenshot">
+    </div>
+</section>
+
 </body>
 </html>
