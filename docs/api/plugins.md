@@ -6,24 +6,30 @@
 
 Каждый плагин должен экспортировать функцию `get_plugin()`. Это единственная точка входа, которую ищет движок.
 
-```cpp
-#include "Plugin.h"
+```asm
+section .data
+    plugin_name    db "Example Plugin", 0
+    plugin_version db "1.0.0", 0
 
-void on_update(PluginContext* ctx) {
-    // Логика каждый кадр
-}
+    ; Структура Plugin (name, version, on_load, on_unload, on_update, on_draw_ui)
+    my_plugin:
+        dq plugin_name
+        dq plugin_version
+        dq 0          ; on_load
+        dq 0          ; on_unload
+        dq on_update  ; on_update
+        dq 0          ; on_draw_ui
 
-PLUGIN_EXPORT Plugin* get_plugin() {
-    static Plugin my_plugin = {
-        "Example Plugin",
-        "1.0.0",
-        nullptr, // on_load
-        nullptr, // on_unload
-        on_update,
-        nullptr  // on_draw_ui
-    };
-    return &my_plugin;
-}
+section .text
+    global get_plugin
+
+on_update:
+    ; RCX содержит указатель на PluginContext (Windows x64 ABI)
+    ret
+
+get_plugin:
+    lea rax, [rel my_plugin]
+    ret
 ```
 
 > **Внимание:** Не сохраняйте указатель `PluginContext` между вызовами функций. Движок может пересоздавать контекст в каждом кадре для обновления данных о выделенных объектах и статистике.
