@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Начало работы | Quark Engine</title>
+<title>Getting Started | Quark Engine</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -25,48 +25,50 @@
         <div class="logo">QUARK</div>
     </div>
     <ul>
-        <li><a href="index.html">Главная</a></li>
-        <li><a href="https://quark-engine.gitbook.io/quark-engine-docs/" target="_blank">Документация</a></li>
-        <li><a href="https://github.com/valmme/QuarkEngine/actions" target="_blank">Скачать</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://quark-engine.gitbook.io/quark-engine-docs/" target="_blank">Documentation</a></li>
+        <li><a href="https://github.com/valmme/QuarkEngine/actions" target="_blank">Download</a></li>
         <li><a href="https://github.com/valmme/QuarkEngine" target="_blank">GitHub</a></li>
     </ul>
 </nav>
 
 <main class="docs">
-    <h2>Начало работы</h2>
+    <h2>Getting Started</h2>
     
-    <p>Добро пожаловать в Quark Engine. Следуйте этой инструкции, чтобы запустить свой первый проект за считанные минуты.</p>
+    <p>Welcome to Quark Engine. Follow this guide to launch your first project in just a few minutes.</p>
 
-    <h3>1. Загрузка движка</h3>
-    <p>Перейдите в раздел GitHub Actions или релизы и скачайте последнюю сборку для вашей ОС (Windows или Linux).</p>
-    <a href="https://github.com/valmme/QuarkEngine" class="btn" style="margin-bottom: 24px;">Скачать последнюю версию</a>
+    <h3>1. Download the Engine</h3>
+    <p>Go to GitHub Actions or releases and download the latest build for your OS (Windows or Linux).</p>
 
-    <h3>2. Системные требования</h3>
+    <a href="https://github.com/valmme/QuarkEngine" class="btn" style="margin-bottom: 24px;">Download Latest Version</a>
+
+    <h3>2. System Requirements</h3>
     <div class="api-grid">
         <div class="api-card">
-            <h4>Видеокарта</h4>
-            <p>Поддержка OpenGL 3.3 или выше (NVIDIA GTX 550 / AMD RX 560+).</p>
+            <h4>Graphics Card</h4>
+            <p>OpenGL 3.3 support or higher (NVIDIA GTX 550 / AMD RX 560+).</p>
         </div>
         <div class="api-card">
-            <h4>Компилятор</h4>
-            <p>Для разработки плагинов потребуется MSVC (Visual Studio 2022) или GCC 11+.</p>
+            <h4>Compiler</h4>
+            <p>For plugin development you need MSVC (Visual Studio 2022) or GCC 11+.</p>
         </div>
     </div>
 
-    <h3>3. Создание проекта</h3>
-    <p>После запуска <code>QuarkEditor.exe</code> выберите «New Project». Движок создаст базовую структуру папок:</p>
+    <h3>3. Creating a Project</h3>
+    <p>After launching <code>QuarkEditor.exe</code>, select “New Project”. The engine will generate a basic folder structure:</p>
+
     <pre><code>/MyProject
-  /resources      <span class="sh-comment">   // Текстуры, модели, звуки</span>
-  scene.json <span class="sh-comment">        // Сохранённая сцена</span>
-  project.quarkproj  <span class="sh-comment">// Файл конфигурации</span></code></pre>
+  /resources       <span class="sh-comment"> // Textures, models, sounds</span>
+  scene.json       <span class="sh-comment"> // Saved scene</span>
+  project.quarkproj <span class="sh-comment">// Configuration file</span></code></pre>
 
     <div class="docs-note">
-        <strong>Совет:</strong> Если вы планируете писать плагины на C++, обязательно загляните в раздел <a href="docs.html" style="color: inherit; text-decoration: underline;">API Документации</a>, чтобы узнать, как взаимодействовать с объектами сцены.
+        <strong>Tip:</strong> If you plan to write plugins in C++, check the <a href="docs.html" style="color: inherit; text-decoration: underline;">API Documentation</a> section to learn how to interact with scene objects.
     </div>
 
     <div class="buttons" style="margin-top: 48px;">
-        <a href="docs.html" class="btn">Перейти к API</a>
-        <a href="index.html" class="btn" style="background: none;">Вернуться на главную</a>
+        <a href="docs.html" class="btn">Go to API</a>
+        <a href="index.html" class="btn" style="background: none;">Back to Home</a>
     </div>
 </main>
 

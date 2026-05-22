@@ -1,97 +1,75 @@
-# Жизненный цикл плагина
+# Plugin Lifecycle
 
-Quark Engine вызывает четыре колбэка в течение жизни плагина. Все они опциональны — передайте `nullptr` если колбэк не нужен.
+This page explains when each plugin callback is called and what each callback should be used for.
 
-## on\_load
+## Load Order
 
-Вызывается один раз при загрузке библиотеки. Используйте для инициализации ресурсов: выделения памяти, загрузки файлов конфигурации, регистрации команд.
-
-## on\_update
-
-Вызывается каждый кадр перед рендерингом. Доступен `delta_time` для вычислений, не привязанных к частоте кадров.
-
-```asm
-; void on_update(PluginContext* ctx)
-on_update PROC
-    ; RCX = ctx
-
-    ; float dt = ctx->delta_time;
-    movss xmm0, dword ptr [rcx]
-
-    ; // логика движения, физики и т.д.
-
-    ret
-on_update ENDP
+```text
+Load library
+→ call get_plugin()
+→ call on_load()
+→ call on_update() every frame
+→ call on_draw_ui() every UI frame
+→ call on_unload()
+→ unload library
 ```
 
-## on\_draw\_ui
+If `get_plugin()` returns `nullptr`, or if required fields in `Plugin` are missing, the engine should treat the load as failed.
 
-Специальный проход для отрисовки интерфейса плагина через встроенные функции UI. Вызывается после `on_update`.
+## on_load
 
-```asm
-EXTERN ui_begin:PROC
-EXTERN ui_button:PROC
-EXTERN ui_end:PROC
+`on_load(PluginContext* ctx)` is called once after the library is loaded. Use it for initialization, resource setup, and registering callbacks.
 
-.data
-ui_title db "Мой плагин",0
-btn_text db "Сбросить",0
-
-.code
-
-; void on_draw_ui(PluginContext* ctx)
-on_draw_ui PROC
-    ; RCX = ctx
-
-    ; ui_begin("Мой плагин");
-    lea rcx, ui_title
-    call ui_begin
-
-    ; if (ui_button("Сбросить")) {
-    lea rcx, btn_text
-    call ui_button
-
-    test eax, eax
-    jz skip_button
-
-    ; // обработка нажатия
-
-skip_button:
-
-    ; ui_end();
-    call ui_end
-
-    ret
-on_draw_ui ENDP
+```cpp
+static void on_load(PluginContext* ctx) {
+    ctx->register_ui_callback(UI_INSPECTOR, my_ui);
+}
 ```
 
-## on\_unload
+## on_update
 
-Вызывается перед выгрузкой плагина. Обязательно освободите всю выделенную память и закройте открытые ресурсы.
+`on_update(PluginContext* ctx)` is called every simulation frame. Use it for time-based logic, animation, and non-UI plugin behavior.
 
-```asm
-EXTERN free:PROC
-
-.data
-my_buffer dq 0
-
-.code
-
-; void on_unload(PluginContext* ctx)
-on_unload PROC
-    ; RCX = ctx
-
-    ; // освобождение ресурсов
-    ; free(my_buffer);
-
-    mov rcx, my_buffer
-    test rcx, rcx
-    jz skip_free
-
-    call free
-
-skip_free:
-
-    ret
-on_unload ENDP
+```cpp
+static void on_update(PluginContext* ctx) {
+    float dt = ctx->delta_time;
+    (void)dt;
+}
 ```
+
+## on_draw_ui
+
+`on_draw_ui(PluginContext* ctx)` is called every UI pass. Use the `ui_*` functions on `ctx` to draw controls.
+
+```cpp
+static void on_draw_ui(PluginContext* ctx) {
+    if (ctx->ui_begin("My Plugin")) {
+        ctx->ui_text("Hello from plugin");
+        ctx->ui_end();
+    }
+}
+```
+
+## on_unload
+
+`on_unload()` is called once before the library is unloaded. Free heap allocations and release external resources here.
+
+```cpp
+static void on_unload() {
+    // cleanup
+}
+```
+
+## Rules
+
+- Keep callbacks fast.
+- Do not block the main thread.
+- Do not keep `PluginContext*` after the call ends.
+- Make sure every `ui_begin()` has a matching `ui_end()`.
+
+## Related Docs
+
+- [Plugins](api/plugins.md)
+- [UI System](api/ui.md)
+- [Scene Management](api/scene.md)
+- [Entities](api/entities.md)

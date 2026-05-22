@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Документация | Quark Engine</title>
+<title>Documentation | Quark Engine</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -31,24 +31,24 @@
         <div class="logo">QUARK</div>
     </div>
     <ul>
-        <li><a href="index.html">Главная</a></li>
-        <li><a href="https://quark-engine.gitbook.io/quark-engine-docs/" target="_blank">Документация</a></li>
-        <li><a href="https://github.com/Quark-Engine/QuarkEngine/actions" target="_blank">Скачать</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="https://quark-engine.gitbook.io/quark-engine-docs/" target="_blank">Documentation</a></li>
+        <li><a href="https://github.com/Quark-Engine/QuarkEngine/actions" target="_blank">Download</a></li>
         <li><a href="https://github.com/Quark-Engine/QuarkEngine" target="_blank">GitHub</a></li>
     </ul>
 </nav>
 
 <main class="docs">
-    <h2>Документация API плагинов</h2>
+    <h2>Plugin API Documentation</h2>
     
-    <p>Плагины в Quark Engine представляют собой динамические библиотеки (DLL или .so), которые позволяют расширять функционал движка, создавать новые инструменты и модифицировать поведение сцены в реальном времени.</p>
+    <p>Plugins in Quark Engine are dynamic libraries (DLL or .so) that allow you to extend engine functionality, create new tools, and modify scene behaviour in real time.</p>
 
-    <h3>Быстрый старт</h3>
-    <p>Каждый плагин должен экспортировать функцию <code>get_plugin()</code>. Это единственная точка входа, которую ищет движок.</p>
-    <pre><code><span class="sh-keyword">#include</span> <span class="sh-string">"Plugin.h"</span>
+    <h3>Quick Start</h3>
+    <p>Each plugin must export a <code>get_plugin()</code> function. This is the only entry point the engine looks for.</p>
+    <pre><code><span class="sh-keyword">#include</span> <span class="sh-string">"plugin.h"</span>
 
 <span class="sh-keyword">void</span> on_update(PluginContext* ctx) {
-    <span class="sh-comment">// Логика каждый кадр</span>
+    <span class="sh-comment">// Logic every frame</span>
 }
 
 <span class="sh-keyword">PLUGIN_EXPORT</span> Plugin* get_plugin() {
@@ -63,53 +63,53 @@
     <span class="sh-keyword">return</span> &my_plugin;
 }</code></pre>
 
-    <h3>Жизненный цикл</h3>
+    <h3>Lifecycle</h3>
     <div class="api-grid">
         <div class="api-card">
             <h4>on_load</h4>
-            <p>Вызывается один раз при загрузке библиотеки. Используйте для инициализации ресурсов.</p>
+            <p>Called once when the library is loaded. Use it for resource initialization.</p>
         </div>
         <div class="api-card">
             <h4>on_update</h4>
-            <p>Вызывается каждый кадр перед рендерингом. Доступен <code>delta_time</code> для вычислений.</p>
+            <p>Called every frame before rendering. Provides <code>delta_time</code> for calculations.</p>
         </div>
         <div class="api-card">
             <h4>on_draw_ui</h4>
-            <p>Специальный проход для отрисовки интерфейса плагина через встроенные функции UI.</p>
+            <p>Special pass for rendering plugin UI using the built-in UI system.</p>
         </div>
         <div class="api-card">
             <h4>on_unload</h4>
-            <p>Вызывается перед выгрузкой плагина. Обязательно освободите всю выделенную память.</p>
+            <p>Called before unloading the plugin. Make sure to free all allocated memory.</p>
         </div>
     </div>
 
-    <h3>Функциональные возможности</h3>
+    <h3>Features</h3>
     
     <div class="api-grid">
         <div class="api-card">
-            <h4>Интерфейс (UI)</h4>
-            <p>Движок предоставляет Immediate-mode UI систему:</p>
+            <h4>UI System</h4>
+            <p>The engine provides an immediate-mode UI system:</p>
             <ul>
-                <li><code>ui_begin / ui_end</code> — создание окон.</li>
-                <li><code>ui_button</code> — обработка нажатий.</li>
-                <li><code>ui_slider_float</code> — управление параметрами.</li>
-                <li><code>ui_color_edit3</code> — выбор цветов.</li>
+                <li><code>ui_begin / ui_end</code> — create windows.</li>
+                <li><code>ui_button</code> — handle button clicks.</li>
+                <li><code>ui_slider_float</code> — adjust parameters.</li>
+                <li><code>ui_color_edit3</code> — color picker.</li>
             </ul>
         </div>
 
         <div class="api-card">
-            <h4>Работа с сущностями</h4>
-            <p>Полный контроль над объектами в сцене:</p>
+            <h4>Entity System</h4>
+            <p>Full control over scene objects:</p>
             <ul>
-                <li>Чтение: <code>entity_get_position</code>, <code>get_name</code>.</li>
-                <li>Мутация: <code>entity_set_scale</code>, <code>set_rotation</code>.</li>
-                <li>Управление: <code>scene_spawn</code>, <code>scene_delete</code>.</li>
+                <li>Read: <code>entity_get_position</code>, <code>get_name</code>.</li>
+                <li>Modify: <code>entity_set_scale</code>, <code>set_rotation</code>.</li>
+                <li>Control: <code>scene_spawn</code>, <code>scene_delete</code>.</li>
             </ul>
         </div>
     </div>
 
     <div class="docs-note">
-        <strong>Внимание:</strong> Не сохраняйте указатель <code>PluginContext</code> между вызовами функций. Движок может пересоздавать контекст в каждом кадре для обновления данных о выделенных объектах и статистике.
+        <strong>Warning:</strong> Do not store the <code>PluginContext</code> pointer between function calls. The engine may recreate the context every frame to update selected object data and statistics.
     </div>
 </main>
 

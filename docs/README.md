@@ -1,14 +1,16 @@
 # Quark Engine
 
-Современный 3D движок с редактором сцен, системой компонентов и полной свободой кастомизации.
+A modern 3D engine with a scene editor, component system, and full customization freedom.
 
-## Ссылки
+## Links
 
 - [GitHub](https://github.com/Quark-Engine/QuarkEngine)
-- [Скачать сборку](https://github.com/Quark-Engine/QuarkEngine/actions)
+- [Download build](https://github.com/Quark-Engine/QuarkEngine/actions)
 
-## Содержание
+## Contents
 
-- [API Документация](api/plugins.md) — как писать плагины для Quark Engine
-- [Жизненный цикл плагина](api/lifecycle.md) — колбэки `on_load`, `on_update`, `on_draw_ui`, `on_unload`
-- [Функциональные возможности](api/features.md) — UI система и работа с сущностями
+- [API Documentation](api/plugins.md) — How to write plugins for Quark Engine
+- [Plugin lifecycle](api/lifecycle.md) — Callbacks `on_load`, `on_update`, `on_draw_ui`, `on_unload`
+- [UI System](api/ui.md) — UI system
+- [Scene Management](api/scene.md) — Manage scene and create objects
+- [Entities](api/entities.md) — Manage entities and their parameters
