@@ -1,10 +1,10 @@
 # Plugin API
 
-Plugins in Quark Engine are dynamic libraries (`.dll` or `.so`) that extend the engine, add editor tools, and can change scene behavior at runtime. The API is built around a single exported entry point and a host-provided context for UI, entity access, and scene control [web:65][web:69].
+Plugins in Quark Engine are dynamic libraries (`.dll` or `.so`) that extend the engine, add editor tools, and can change scene behavior at runtime. The API is built around a single exported entry point and a host-provided context for UI, entity access, and scene control.
 
 ## Quick Start
 
-Every plugin must export `get_plugin()`. This is the only symbol the engine looks for when loading the library [web:65][web:69].
+Every plugin must export `get_plugin()`. This is the only symbol the engine looks for when loading the library.
 
 ```cpp
 #include "plugin.h"
