@@ -1,160 +1,98 @@
-# Entities
+# Entities and Components
 
-Entities are the objects that make up a scene. Each one is identified by an integer index in the range `[0, entity_count)`. Use the read functions to inspect state and the write functions to modify it.
+Entity functions are provided by `SPluginContext` and operate on the
+host-owned scene. Pass `pCtx->pScene` to entity functions. Valid entity indices
+are normally in `[0, pCtx->entityCount)`; scene mutations can invalidate or
+shift indices.
 
-> **Note:** Entity indices can shift after a `scene_delete()` call. Never cache an index across frames — always re-query if needed.
+## Read and update entity state
 
-## Reading Entity State
-
-### Name
-
-Returns a pointer to the entity's name string. The string is owned by the host — do not free or modify it.
-
-```cpp
-const char* name = ctx->entity_get_name(index);
-ctx->ui_text(name);
-```
+The API provides `pfnEntityGetName`, `pfnEntityGetPosition`,
+`pfnEntityGetRotation`, `pfnEntityGetScale`, and `pfnEntityGetColor` for
+queries, and corresponding `pfnEntitySet...` functions for updates.
+String results are host-owned; do not free or modify them.
 
 ```cpp
-const char* (*entity_get_name)(int index);
-```
-
-### Position
-
-Writes the entity's world-space position into three output floats.
-
-```cpp
-float x, y, z;
-ctx->entity_get_position(index, &x, &y, &z);
-```
-
-```cpp
-void (*entity_get_position)(int index, float* x, float* y, float* z);
-```
-
-### Rotation
-
-Writes the entity's Euler rotation into three output floats. The unit (degrees or radians) is defined by the host.
-
-```cpp
-float rx, ry, rz;
-ctx->entity_get_rotation(index, &rx, &ry, &rz);
-```
-
-```cpp
-void (*entity_get_rotation)(int index, float* x, float* y, float* z);
-```
-
-### Scale
-
-Writes the entity's scale into three output floats.
-
-```cpp
-float sx, sy, sz;
-ctx->entity_get_scale(index, &sx, &sy, &sz);
-```
-
-```cpp
-void (*entity_get_scale)(int index, float* x, float* y, float* z);
-```
-
-### Color
-
-Writes the entity's RGBA tint into four output bytes in the range `[0, 255]`.
-
-```cpp
-unsigned char r, g, b, a;
-ctx->entity_get_color(index, &r, &g, &b, &a);
-```
-
-```cpp
-void (*entity_get_color)(int index, unsigned char* r, unsigned char* g,
-                         unsigned char* b, unsigned char* a);
-```
-
-## Modifying Entity State
-
-### Position
-
-```cpp
-ctx->entity_set_position(index, 0.0f, 1.0f, 0.0f);
-```
-
-```cpp
-void (*entity_set_position)(int index, float x, float y, float z);
-```
-
-### Rotation
-
-```cpp
-ctx->entity_set_rotation(index, 0.0f, 90.0f, 0.0f);
-```
-
-```cpp
-void (*entity_set_rotation)(int index, float x, float y, float z);
-```
-
-### Scale
-
-```cpp
-ctx->entity_set_scale(index, 2.0f, 2.0f, 2.0f);
-```
-
-```cpp
-void (*entity_set_scale)(int index, float x, float y, float z);
-```
-
-### Color
-
-```cpp
-ctx->entity_set_color(index, 255, 128, 0, 255); // opaque orange
-```
-
-```cpp
-void (*entity_set_color)(int index, unsigned char r, unsigned char g,
-                         unsigned char b, unsigned char a);
-```
-
-### Name
-
-The host copies the string internally, so the caller can free its buffer immediately after this returns.
-
-```cpp
-ctx->entity_set_name(index, "Player");
-```
-
-```cpp
-void (*entity_set_name)(int index, const char* name);
-```
-
-## Iterating All Entities
-
-Use `entity_count` from `PluginContext` to loop over every entity in the scene.
-
-```cpp
-for (int i = 0; i < ctx->entity_count; i++) {
-    const char* name = ctx->entity_get_name(i);
-    ctx->ui_text(name);
-}
-```
-
-## Working with the Selected Entity
-
-`ctx->selected` points to the index of the currently selected entity, or `nullptr` if nothing is selected. Always null-check before dereferencing.
-
-```cpp
-if (ctx->selected) {
-    int i = *ctx->selected;
+const int entityIndex = pCtx->pfnSceneGetSelected(pCtx->pScene);
+if (entityIndex >= 0)
+{
     float x, y, z;
-    ctx->entity_get_position(i, &x, &y, &z);
-    ctx->ui_input_float("X", &x);
-    ctx->entity_set_position(i, x, y, z);
+    pCtx->pfnEntityGetPosition(pCtx->pScene, entityIndex, &x, &y, &z);
+    pCtx->pfnEntitySetPosition(pCtx->pScene, entityIndex, x, y + 1.0f, z);
 }
 ```
 
-## Related Docs
+Color uses four `unsigned char` channels in the `[0, 255]` range. Entity
+rotation uses the host's rotation unit.
 
-- [Plugin Overview](api/plugins.md)
-- [Plugin Lifecycle](api/lifecycle.md)
-- [UI System](api/ui.md)
-- [Scene Management](api/scene.md)
+## Hierarchy
+
+`pfnEntityGetParent` returns a parent index, or `-1` for a root.
+`pfnEntitySetParent` reparents while preserving world transform and returns
+`false` for invalid indices or a parent that would create a cycle.
+
+```cpp
+const int parentIndex = pCtx->pfnEntityGetParent(pCtx->pScene, entityIndex);
+const bool reparented = pCtx->pfnEntitySetParent(
+    pCtx->pScene, entityIndex, parentIndex);
+(void)reparented;
+```
+
+## Components
+
+Plugins can inspect components with `pfnEntityGetComponentCount`,
+`pfnEntityGetComponentType`, and `pfnEntityHasComponent`; add, remove, or toggle
+them with `pfnEntityAddComponent`, `pfnEntityRemoveComponent`, and
+`pfnEntitySetComponentEnabled`.
+
+To make a plugin-defined component constructible after loading a scene or
+applying undo, register a factory with `pfnRegisterComponentFactory`. The
+factory returns a newly allocated default component instance for the host to
+own.
+
+```cpp
+static void* CreateExampleComponent()
+{
+    return new ExampleComponent();
+}
+
+static void OnLoad(SPluginContext* pCtx)
+{
+    pCtx->pfnRegisterComponentFactory(
+        pCtx, "ExampleComponent", CreateExampleComponent);
+}
+```
+
+Built-in component type names cannot be overwritten. There is currently a
+lifecycle limitation: `pfnUnregisterComponentFactory` needs a context, but
+`pfnOnUnload` does not provide one. Do not retain `SPluginContext*` beyond a
+callback to work around this. Until the host provides a context-aware teardown
+hook, avoid unloading a plugin that registered component factories.
+
+## Tags
+
+Use `pfnEntityGetTagCount`, `pfnEntityGetTag`, and `pfnEntityHasTag` to query
+tags. `pfnEntityAddTag` and `pfnEntityRemoveTag` mutate them. Tag strings
+returned by the host must not be freed or modified.
+
+## Selected entity
+
+`pCtx->pSelected` is a pointer to the selected entity index and can be null.
+Alternatively, use the multi-selection functions in
+[Scene Management](scene.md).
+
+```cpp
+if (pCtx->pSelected != nullptr && *pCtx->pSelected >= 0)
+{
+    const int entityIndex = *pCtx->pSelected;
+    const char* pName = pCtx->pfnEntityGetName(pCtx->pScene, entityIndex);
+    (void)pName;
+}
+```
+
+## Related docs
+
+- [Plugin API](plugins.md)
+- [Plugin Lifecycle](lifecycle.md)
+- [UI System](ui.md)
+- [Scene Management](scene.md)

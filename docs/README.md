@@ -9,8 +9,8 @@ A modern 3D engine with a scene editor, component system, and full customization
 
 ## Contents
 
-- [API Documentation](api/plugins.md) — How to write plugins for Quark Engine
-- [Plugin lifecycle](api/lifecycle.md) — Callbacks `on_load`, `on_update`, `on_draw_ui`, `on_unload`
-- [UI System](api/ui.md) — UI system
-- [Scene Management](api/scene.md) — Manage scene and create objects
-- [Entities](api/entities.md) — Manage entities and their parameters
+- [Plugin API](api/plugins.md) — Build plugins with `SPlugin`, `SPluginContext`, and `GetPlugin()`
+- [Plugin lifecycle](api/lifecycle.md) — Lifecycle callbacks, events, and unload behavior
+- [UI System](api/ui.md) — Plugin windows, widgets, menus, and editor UI regions
+- [Scene Management](api/scene.md) — Scene, selection, asset, and undo-command functions
+- [Entities and Components](api/entities.md) — Entity, hierarchy, component, and tag APIs

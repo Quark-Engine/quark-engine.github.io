@@ -1,93 +1,85 @@
 # Scene Management
 
-The scene API lets plugins save the current scene, spawn new entities from assets, and delete existing ones. All functions are available as function pointers on `PluginContext`.
+Scene and editor functions are exposed as function pointers on
+`SPluginContext`. Scene operations take the host-owned `pCtx->pScene`; asset
+operations use `pCtx->pAssets`. Do not retain these borrowed handles beyond
+the current callback.
 
-## The Scene Object
+## Save
 
-`ctx->scene` is a pointer to the current scene state owned by the host. It is available for the duration of the callback but should not be stored beyond it.
+`pfnSceneSave` serializes the scene to the project path supplied by the host:
 
 ```cpp
-Scene* scene;
+pCtx->pfnSceneSave(pCtx->pProjectPath, pCtx->pScene);
 ```
 
-## Functions
+## Spawn and delete entities
 
-### Save
-
-Serializes the current scene to disk using the host's default save path. Equivalent to the user pressing Ctrl-S.
-
-```cpp
-ctx->scene_save();
-```
+Spawn a registered asset by name. The function returns the new entity index or
+`-1` on failure. `pfnSceneSpawnEx` additionally sets the initial position.
 
 ```cpp
-void (*scene_save)();
-```
-
-### Spawn
-
-Instantiates an asset by name and adds it to the scene. Returns the new entity's index on success, or `-1` if the asset name is not found in the host's asset registry.
-
-```cpp
-int index = ctx->scene_spawn("crate_01");
-if (index >= 0) {
-    ctx->entity_set_position(index, 0.0f, 0.0f, 0.0f);
+const int entityIndex = pCtx->pfnSceneSpawn(
+    pCtx->pAssets, pCtx->pScene, "Cube");
+if (entityIndex >= 0)
+{
+    pCtx->pfnEntitySetPosition(pCtx->pScene, entityIndex, 0.0f, 1.0f, 0.0f);
 }
 ```
 
 ```cpp
-int (*scene_spawn)(const char* asset_name);
+const int entityIndex = pCtx->pfnSceneSpawnEx(
+    pCtx->pAssets, pCtx->pScene, "Cube", 0.0f, 1.0f, 0.0f);
 ```
 
-### Delete
-
-Permanently removes an entity from the scene by index.
+Delete an entity with `pfnSceneDelete`. Entity indices greater than the
+deleted index can shift, so re-query selection and entity state after deletion;
+do not keep indices across scene mutations.
 
 ```cpp
-ctx->scene_delete(index);
+pCtx->pfnSceneDelete(pCtx->pScene, entityIndex);
 ```
 
-```cpp
-void (*scene_delete)(int index);
-```
+## Selection
 
-> **Warning:** After `scene_delete()`, indices for all entities above the deleted index may shift. Treat any cached index as invalid and re-query `entity_count` before accessing entities again.
-
-## Common Patterns
-
-### Spawn and configure in one step
+`pfnSceneGetSelected` returns the primary selected index or `-1`.
+`pfnSceneGetSelectionCount` and `pfnSceneGetSelectedAt` expose multi-selection.
+Use `pfnSceneSetSelected` to replace or add/toggle selection.
 
 ```cpp
-int index = ctx->scene_spawn("point_light");
-if (index >= 0) {
-    ctx->entity_set_position(index, 0.0f, 5.0f, 0.0f);
-    ctx->entity_set_name(index, "Key Light");
+const int selectionCount = pCtx->pfnSceneGetSelectionCount(pCtx->pScene);
+for (int i = 0; i < selectionCount; ++i)
+{
+    const int entityIndex = pCtx->pfnSceneGetSelectedAt(pCtx->pScene, i);
+    (void)entityIndex;
 }
 ```
 
-### Delete the selected entity
+## Undoable plugin commands
+
+Group related scene mutations into a host undo command:
 
 ```cpp
-if (ctx->selected) {
-    int i = *ctx->selected;
-    ctx->scene_delete(i);
-    // Do not dereference ctx->selected or use i after this point.
-}
+pCtx->pfnSceneBeginCommand(pCtx->pScene, "Move selected entity");
+pCtx->pfnEntitySetPosition(pCtx->pScene, entityIndex, 1.0f, 2.0f, 3.0f);
+pCtx->pfnSceneEndCommand(pCtx->pScene);
 ```
 
-### Auto-save on a condition
+Call begin before the mutations and always pair it with end. Nested plugin
+commands are ignored. The context also provides `pfnSceneUndo`,
+`pfnSceneRedo`, and `pfnSceneIsDirty`.
 
-```cpp
-void on_update(PluginContext* ctx) {
-    if (should_autosave()) {
-        ctx->scene_save();
-    }
-}
-```
+## Assets and editor integration
 
-## Related Docs
+The asset helpers `pfnAssetGetCount`, `pfnAssetGetName`, `pfnAssetGetType`,
+and `pfnAssetExists` query assets through `pCtx->pAssets`.
+`pfnEditorFocusEntity`, `pfnEditorSetStatusMessage`, and
+`pfnEditorOpenAsset` provide editor-level actions. Check that an asset exists
+before spawning it if the name may be unavailable.
 
-- [Plugin Overview](api/plugins.md)
-- [Plugin Lifecycle](api/lifecycle.md)
-- [UI System](api/ui.md)
-- [Entities](api/entities.md)
+## Related docs
+
+- [Plugin API](plugins.md)
+- [Plugin Lifecycle](lifecycle.md)
+- [UI System](ui.md)
+- [Entities and Components](entities.md)
